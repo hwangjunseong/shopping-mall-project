@@ -2,7 +2,8 @@
 const fs = require("fs");
 //file 읽기
 const main_view = fs.readFileSync("./main.html", "utf-8");
-const orderlist_view = fs.readFileSync("./orderlist.html", "utf-8");
+//orderlist_view에 내용 추가해줄꺼라 const대신 let사용
+let orderlist_view = fs.readFileSync("./orderlist.html", "utf-8");
 //mariadb 모듈 부르기
 const mariadb = require("./database/connect/mariadb");
 //라우터가 루트를 지정한 후 분배해서 각 경로를 알려주면
@@ -81,29 +82,34 @@ function orderlist(response) {
   response.writeHead(200, { "Content-Type": "text/html" });
 
   mariadb.query("SELECT * FROM orderlist", function (err, rows) {
-    response.write(orderlist_view);
-    // console.log(orderlist_view);
+    // response.write(orderlist_view);
+    console.log(orderlist_view);
     rows.forEach((row) => {
       //   console.log(row.product_id);
       //   console.log(row.order_date);
-      //   orderlist_view += `
-      //         <tr>
-      //             <td> +${row.product_id}</td>
-      //             <td> +${row.order_date}</td>
-      //         </tr>
-      //     `;
-      response.write(
-        "<tr>" +
-          "<td>" +
-          row.product_id +
-          "</td>" +
-          "<td>" +
-          row.order_date +
-          "</td>" +
-          "</tr>"
-      );
+      orderlist_view += `
+                <tr>
+                    <td> ${row.product_id}</td>
+                    <td> ${row.order_date}</td>
+                </tr>
+            `;
+      //   response.write(
+      //     "<tr>" +
+      //       "<td>" +
+      //       row.product_id +
+      //       "</td>" +
+      //       "<td>" +
+      //       row.order_date +
+      //       "</td>" +
+      //       "</tr>"
+      //   );
     });
-    response.write("</table>");
+    // orderlist_view += "</table>";
+    console.log(orderlist_view);
+    //기존방식은 write를 매번하는 방식
+    //모았다가 한번에 write함
+    response.write(orderlist_view);
+    // response.write("</table>");
 
     response.end();
   });
